@@ -1,0 +1,32 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-awsusergroup-dev-121338-authRole",
+      "UnauthRoleArn": "arn:aws:iam::628221610905:role/amplify-awsusergroup-dev-121338-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::628221610905:role/amplify-awsusergroup-dev-121338-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-awsusergroup-dev-121338-deployment",
+      "UnauthRoleName": "amplify-awsusergroup-dev-121338-unauthRole",
+      "StackName": "amplify-awsusergroup-dev-121338",
+      "StackId": "arn:aws:cloudformation:us-east-1:628221610905:stack/amplify-awsusergroup-dev-121338/994c7da0-aacc-11ec-a763-0e8f474ca6b3",
+      "AmplifyAppId": "d2y6u8m1foejxd"
+    },
+    "categories": {
+      "function": {
+        "apilambdatest": {
+          "deploymentBucketName": "amplify-awsusergroup-dev-121338-deployment",
+          "s3Key": "amplify-builds/apilambdatest-34417a4d4b5563586f4e-build.zip",
+          "queueUrl": "https://sqs.us-east-1.amazonaws.com/628221610905/custom-sqs-trigger-dev"
+        },
+        "echofunction": {
+          "deploymentBucketName": "amplify-awsusergroup-dev-121338-deployment",
+          "s3Key": "amplify-builds/echofunction-70304d367a46494f7337-build.zip"
+        },
+        "echofunctionObj": {
+          "deploymentBucketName": "amplify-awsusergroup-dev-121338-deployment",
+          "s3Key": "amplify-builds/echofunctionObj-6b787849796f746c386a-build.zip"
+        }
+      }
+    }
+  }
+}

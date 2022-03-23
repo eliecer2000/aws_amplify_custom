@@ -1,0 +1,34 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY {
+  globalAuthRule: AuthRule = { allow: public }
+} # FOR TESTING ONLY!
+type Items @model {
+  id: ID!
+  name: String!
+  description: String
+  archived: Boolean! @default(value: "false")
+}
+
+type OthersItems @model {
+  id: ID!
+  name: String!
+  description: String
+  archived: Boolean! @default(value: "false")
+}
+
+type Query {
+  echo_string(msg: String): String @function(name: "echofunction-${env}")
+  echo_object(msg: String): echoOutput @function(name: "echofunctionObj-${env}")
+  sqs_test(msg: String): sqsOutput @function(name: "apilambdatest-${env}")
+}
+
+type echoOutput {
+  msg: String
+  items: [String]
+}
+
+type sqsOutput {
+  MD5OfMessageBody: String
+  MessageId: String
+}

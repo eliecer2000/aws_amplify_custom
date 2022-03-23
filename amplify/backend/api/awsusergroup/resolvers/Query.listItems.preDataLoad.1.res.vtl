@@ -1,0 +1,7 @@
+#if($ctx.error)
+    $util.error($ctx.error.message, $ctx.error.type)
+#end
+#set($filter = [])
+$util.qr($filter.add({ "archived": { "eq": false }}))
+$util.qr($ctx.stash.put("authFilter", { "and" : $filter }))
+$util.toJson({})

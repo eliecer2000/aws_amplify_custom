@@ -1,0 +1,243 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "apiawsusergroupGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIKeyOutput attribute for api/awsusergroup resource"
+    },
+    "apiawsusergroupGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIIdOutput attribute for api/awsusergroup resource"
+    },
+    "apiawsusergroupGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Description": "Input parameter describing GraphQLAPIEndpointOutput attribute for api/awsusergroup resource"
+    },
+    "functionapilambdatestName": {
+      "Type": "String",
+      "Description": "Input parameter describing Name attribute for function/apilambdatest resource"
+    },
+    "functionapilambdatestArn": {
+      "Type": "String",
+      "Description": "Input parameter describing Arn attribute for function/apilambdatest resource"
+    },
+    "functionapilambdatestRegion": {
+      "Type": "String",
+      "Description": "Input parameter describing Region attribute for function/apilambdatest resource"
+    },
+    "functionapilambdatestLambdaExecutionRole": {
+      "Type": "String",
+      "Description": "Input parameter describing LambdaExecutionRole attribute for function/apilambdatest resource"
+    }
+  },
+  "Resources": {
+    "MyQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": {
+          "Fn::Join": [
+            "",
+            [
+              "custom-sqs-trigger-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "TriggerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Join": [
+            "",
+            [
+              "custom-function-lambda-trigger-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Code": {
+          "ZipFile": "exports.handler = (event, context, callback) => {\n    callback(null, \"Hello World!\");\n};\n"
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": "25"
+      }
+    },
+
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "custom-role-lambda-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "SQSExecutionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "*",
+                  "Effect": "Allow"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": ["sqs:*"],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "MyLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {
+          "Fn::Join": [
+            "",
+            [
+              "custom-function-lambda-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+        },
+        "Code": {
+          "ZipFile": "exports.handler = (event, context, callback) => {\n    callback(null, \"Hello World!\");\n};\n"
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": "25"
+      }
+    },
+    "StatesExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::Join": [
+            "",
+            [
+              "custom-role-stepfunction-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  {
+                    "Fn::Sub": "states.${AWS::Region}.amazonaws.com"
+                  }
+                ]
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "StatesExecutionPolicy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["lambda:InvokeFunction"],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "MyStateMachine": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "StateMachineName": {
+          "Fn::Join": [
+            "",
+            [
+              "custom-stepfunction-",
+              {
+                "Ref": "env"
+              }
+            ]
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Sub": [
+            "{\n  \"Comment\": \"A Hello World example using an AWS Lambda function\",\n  \"StartAt\": \"HelloWorld\",\n  \"States\": {\n    \"HelloWorld\": {\n      \"Type\": \"Task\",\n      \"Resource\": \"${lambdaArn}\",\n      \"End\": true\n    }\n  }\n}",
+            {
+              "lambdaArn": {
+                "Fn::GetAtt": ["MyLambdaFunction", "Arn"]
+              }
+            }
+          ]
+        },
+        "RoleArn": {
+          "Fn::GetAtt": ["StatesExecutionRole", "Arn"]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StateMachineArn": {
+      "Value": {
+        "Ref": "MyStateMachine"
+      }
+    }
+  },
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"7.6.25\",\"stackType\":\"custom-customCloudformation\",\"metadata\":{}}"
+}

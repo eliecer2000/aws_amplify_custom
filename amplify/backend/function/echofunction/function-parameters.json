@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "api": {
+      "awsusergroup": [
+        "Query",
+        "Mutation"
+      ]
+    },
+    "function": {
+      "apilambdatest": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    "storage": {
+      "Items:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "OthersItems:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

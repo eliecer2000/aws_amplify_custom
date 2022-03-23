@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "api": {
+      "awsusergroup": [
+        "Query",
+        "Mutation"
+      ]
+    }
+  },
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "queueUrl",
+      "environmentVariableName": "QUEUE_URL"
+    }
+  ]
+}

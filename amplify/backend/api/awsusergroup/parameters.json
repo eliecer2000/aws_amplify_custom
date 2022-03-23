@@ -1,0 +1,5 @@
+{
+  "AppSyncApiName": "awsusergroup",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false
+}
